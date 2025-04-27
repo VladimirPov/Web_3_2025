@@ -1,5 +1,7 @@
 import {Router} from "express"
-import { getUsers, createUser, deleteUser } from "../controllers/users.controller";
+import { getUsers, createUser, deleteUser, updateUser } from "../controllers/users.controller";
+import { authMiddleware } from "../middleWares/authMiddleWare";
+import { UserRoles } from "../models/User";
 
 const router = Router();
 /**
@@ -70,6 +72,7 @@ router.post("/", createUser);
  *      summary: Получить список пользователей
  *      description: Возвращает список пользователей
  *      tags: [Users]
+ *      security: [{ bearerAuth: []}]
  *      responses:
  *        201: 
  *          description: Успешный ответ
@@ -101,7 +104,87 @@ router.post("/", createUser);
  *                   example: "Internal Server Error"
  */
 // Получить всех пользователей
-router.get("/", getUsers);
+router.get("/", authMiddleware([UserRoles.admin, UserRoles.moderator]),  getUsers);
+
+/**
+ * @swagger
+ * /users:
+ *   put:
+ *     summary: Изменить информацию о пользователе
+ *     description: Изменяет информацию о пользователе
+ *     tags: [Users]
+ *     security: [{ bearerAuth: []}]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: 
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 30
+ *                 example: "Кто-то"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "who.@gmail.com"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 example: "666"
+ *     responses:
+ *       200:
+ *         description: Информация о пользователе изменена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 username:
+ *                   type: string
+ *                   example: "Кто-то"
+ *                 email:
+ *                   type: string
+ *                   example: "who.@gmail.com"
+ *                 password:
+ *                   type: string
+ *                   example: "666"
+ *                 _id:
+ *                   type: string
+ *                   example: "680e60c402216be6d0ff8b54"
+ *                 __v:
+ *                   type: int
+ *                   example: 0
+ *       400:
+ *         description: Неверные данные
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Email is required"
+ *       404:
+ *         description: Пользователь не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ */
+router.put("/", updateUser);
+
 /**
  * @swagger
  * /users:
@@ -109,6 +192,7 @@ router.get("/", getUsers);
  *     summary: Удалить пользователя
  *     description: Удаляет пользователя по ID
  *     tags: [Users]
+ *     security: [{ bearerAuth: []}]
  *     requestBody:
  *       required: true
  *       content:
@@ -145,5 +229,5 @@ router.get("/", getUsers);
  *         description: Ошибка сервера
  */
 // Удалить пользователя
-router.delete("/", deleteUser);
+router.delete("/", authMiddleware([UserRoles.admin]), deleteUser);
 export default router;

@@ -1,6 +1,7 @@
 import {Router} from "express"
 import { signUp, signIn } from "../controllers/auth.controller";
 
+
 const router = Router();
 
 /**
@@ -25,6 +26,11 @@ const router = Router();
  *             type: object
  *             required: [email, password]
  *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 30
+ *                 example: "Кто-то"
  *               email:
  *                 type: string
  *                 format: email
@@ -34,6 +40,10 @@ const router = Router();
  *                 format: password
  *                 minLength: 8
  *                 example: "666"
+ *               role:
+ *                 type: string
+ *                 default: user
+ *                 example: user
  *     responses:
  *       201:
  *         description: Пользователь создан
@@ -42,15 +52,22 @@ const router = Router();
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 user: 
+ *                   type: object
+ *                   properties:
+ *                   id:
+ *                     type: string
+ *                     example: "507f1f77bcf86cd799439011"
+ *                   username:
+ *                     type: string
+ *                     example: "Никто"
+ *                   email:
+ *                     type: string
+ *                     example: "none.@gmail.com"
+ *                 token:
  *                   type: string
- *                   example: "507f1f77bcf86cd799439011"
- *                 username:
+ *                 message:
  *                   type: string
- *                   example: "Никто"
- *                 email:
- *                   type: string
- *                   example: "none.@gmail.com"
  *       400:
  *         description: Неверные данные
  *         content:
