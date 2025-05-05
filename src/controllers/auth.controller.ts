@@ -1,6 +1,6 @@
 import type { Response, Request } from "express"
 import User from "../models/User";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/constants";
 
